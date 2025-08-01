@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <section class="text-center my-4">
+  <input type="email" id="emailInput" placeholder="Enter your email to log in" class="border p-2 rounded w-full max-w-sm" />
+  <button onclick="handleLogin()" class="bg-blue-600 text-white px-4 py-2 rounded mt-2">Login</button>
+  <p id="loginStatus" class="text-sm mt-2 text-gray-600"></p>
+</section>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Church Flyer Generator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-800">
+  <!-- Hero -->
+  <header class="bg-white shadow-md p-8 rounded-b-xl text-center">
+    <h1 class="text-4xl font-extrabold text-blue-700 mb-2">
+      Make Church Flyers in 60 Seconds 🙌
+    </h1>
+    <p class="text-lg text-gray-600 mb-4">
+      No design skills needed. Try it free.
+    </p>
+    <a href="#flyerBuilder" class="bg-blue-600 text-white py-2 px-6 rounded-full font-semibold hover:bg-blue-700 transition">
+      Start Building Now →
+    </a>
+  </header>
+
+  <!-- Preview Samples -->
+  <section class="max-w-5xl mx-auto py-10 px-4">
+    <h2 class="text-2xl font-bold mb-4">📸 Sample Flyers</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <img src="/examples/sample1.jpg" class="rounded shadow" alt="Sample flyer 1">
+      <img src="/examples/sample2.jpg" class="rounded shadow" alt="Sample flyer 2">
+      <img src="/examples/sample3.jpg" class="rounded shadow" alt="Sample flyer 3">
+    </div>
+  </section>
+
+  <!-- Pricing -->
+  <section class="bg-white py-10 px-4">
+    <h2 class="text-2xl font-bold text-center mb-6">💰 Simple Pricing</h2>
+    <div class="flex flex-col md:flex-row justify-center items-center gap-8 max-w-4xl mx-auto">
+      <div class="bg-gray-100 p-6 rounded-xl w-full max-w-sm text-center shadow">
+        <h3 class="text-xl font-bold mb-2">Free</h3>
+        <p>1 watermarked flyer</p>
+        <p class="mt-2 text-sm text-gray-500">(No image uploads)</p>
+      </div>
+      <div class="bg-blue-600 text-white p-6 rounded-xl w-full max-w-sm text-center shadow">
+        <h3 class="text-xl font-bold mb-2">Pro</h3>
+        <p>Unlimited flyers + no watermark</p>
+        <p class="mt-2 text-sm">Only $5/month</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Flyer Builder -->
+  <section id="flyerBuilder" class="max-w-6xl mx-auto py-12 px-4 grid grid-cols-1 md:grid-cols-2 gap-8">
+    <!-- Form Section -->
+    <div class="space-y-4">
+      <input id="churchNameInput" class="w-full p-2 border rounded" placeholder="Church or Ministry Name" />
+      <input id="eventTitleInput" class="w-full p-2 border rounded" placeholder="Event Title" />
+      <input id="eventDateInput" class="w-full p-2 border rounded" placeholder="Event Date & Time" />
+      <input id="locationInput" class="w-full p-2 border rounded" placeholder="Location" />
+      <input id="guestSpeakerInput" class="w-full p-2 border rounded" placeholder="Guest Speaker (optional)" />
+      <input id="contactInput" class="w-full p-2 border rounded" placeholder="Contact Info (optional)" />
+      <input id="socialsInput" class="w-full p-2 border rounded" placeholder="Social Media (optional)" />
+
+      <label class="block font-semibold">Background Color</label>
+      <input type="color" id="bgColorPicker" class="w-full h-10 border rounded" />
+
+      <label class="block font-semibold mt-4">Upload Background Image</label>
+      <input type="file" id="bgImageInput" accept="image/*" class="w-full" />
+
+      <label class="block font-semibold mt-4">Choose Template</label>
+      <select id="templateSelect" class="w-full p-2 border rounded">
+        <option value="classic">Classic</option>
+        <option value="modern">Modern</option>
+        <option value="bold">Bold</option>
+      </select>
+
+      <label class="block font-semibold mt-4">Upload Logo</label>
+      <input type="file" id="logoInput" accept="image/*" class="w-full" />
+
+      <button onclick="handleDownload()" class="mt-6 w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
+        Download Flyer
+      </button>
+    </div>
+
+    <!-- Preview Section -->
+    <div class="bg-white p-6 rounded-xl shadow flex flex-col items-center justify-start" style="min-height: 700px;" id="flyerContainer">
+      <div id="flyerPreview" class="w-full h-full flex flex-col items-center text-center p-4 space-y-2">
+        <p id="churchName" class="text-lg font-semibold uppercase"></p>
+        <p id="flyerTitle" class="text-3xl font-bold"></p>
+        <p id="flyerDate" class="text-lg"></p>
+        <p id="flyerLocation" class="text-md"></p>
+        <p id="guestSpeaker" class="italic"></p>
+        <p id="contactInfo" class="text-sm"></p>
+        <p id="socialsInfo" class="text-sm"></p>
+        <img id="flyerLogo" class="mt-4 w-40 h-auto object-contain" />
+      </div>
+    </div>
+  </section>
+
+  <!-- Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script>
+    const SUPABASE_URL = 'https://supabase.com/dashboard/project/ckiqqazzwjzqowtbuvmk';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNraXFxYXp6d2p6cW93dGJ1dm1rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQwODcxMjYsImV4cCI6MjA2OTY2MzEyNn0.gGH88uzHgCEd4PMvQRxleiTcspnVcvpQqd4Wg_9PxxMYOUR_PUBLIC_ANON_KEY';
+
+const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const flyerPreview = document.getElementById("flyerPreview");
+
+    function updateFlyer() {
+      document.getElementById("churchName").textContent = document.getElementById("churchNameInput").value;
+      document.getElementById("flyerTitle").textContent = document.getElementById("eventTitleInput").value;
+      document.getElementById("flyerDate").textContent = document.getElementById("eventDateInput").value;
+      document.getElementById("flyerLocation").textContent = document.getElementById("locationInput").value;
+      document.getElementById("guestSpeaker").textContent = document.getElementById("guestSpeakerInput").value;
+      document.getElementById("contactInfo").textContent = document.getElementById("contactInput").value;
+      document.getElementById("socialsInfo").textContent = document.getElementById("socialsInput").value;
+    }
+
+    document.querySelectorAll("input, select").forEach((el) =>
+      el.addEventListener("input", updateFlyer)
+    );
+
+    document.getElementById("logoInput").addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = () => (document.getElementById("flyerLogo").src = reader.result);
+        reader.readAsDataURL(file);
+      }
+    });
+
+    document.getElementById("bgColorPicker").addEventListener("input", (e) => {
+      flyerPreview.style.backgroundImage = "none";
+      flyerPreview.style.backgroundColor = e.target.value;
+    });
+
+    document.getElementById("bgImageInput").addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          flyerPreview.style.backgroundImage = `url(${reader.result})`;
+          flyerPreview.style.backgroundSize = "cover";
+          flyerPreview.style.backgroundPosition = "center";
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    async function handleDownload() {
+  const {
+    data: { user }
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    alert("Please log in first to access downloads.");
+    return;
+  }
+
+  // Check Supabase DB for active subscription
+  const { data, error } = await supabase
+    .from('subscriptions')
+    .select('*')
+    .eq('user_email', user.email)
+    .eq('status', 'active');
+
+  if (data.length > 0) {
+    // User is subscribed
+    downloadFlyer();
+  } else {
+    const confirmed = confirm("Upgrade to Pro for $5/month to unlock unlimited downloads. Continue?");
+    if (confirmed) {
+      const response = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: user.email })  // pass email to backend
+      });
+
+      const resData = await response.json();
+      if (resData.url) window.location.href = resData.url;
+      else alert("Checkout failed");
+    }
+  }
+}
+
+    function downloadFlyer() {
+      html2canvas(document.getElementById("flyerPreview")).then((canvas) => {
+        const link = document.createElement("a");
+        link.download = "church-flyer.png";
+        link.href = canvas.toDataURL();
+        link.click();
+        canvas.toBlob((blob) => {
+          const formData = new FormData();
+          formData.append("file", blob, "church-flyer.png");
+
+          fetch("https://YOUR_SUPABASE_URL/storage/v1/object/public/flyers/church-flyer.png", {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${SUPABASE_KEY}`,
+            },
+            body: formData,
+          })
+            .then((response) => {
+              if (response.ok) {
+                console.log("File uploaded successfully");
+              } else {
+                console.error("File upload failed");
+              }
+            });
+        });
+      });
+    }
+    async function handleLogin() {
+  const email = document.getElementById('emailInput').value;
+  const { error } = await supabase.auth.signInWithOtp({ email });
+
+  if (error) {
+    alert('Login error: ' + error.message);
+  } else {
+    document.getElementById('loginStatus').textContent = 'Check your email for a magic login link!';
+  }
+}
+  </script>
+
+  <!-- Footer -->
+  <footer class="text-center py-6 text-sm text-gray-500">
+    <a href="/terms.html" class="hover:underline">Terms</a> |
+    <a href="/privacy.html" class="hover:underline">Privacy</a> |
+    <a href="/download-success.html" class="hover:underline">Download Success</a>
+    <p class="mt-2">© 2025 Church Flyer Generator</p>
+  </footer>
+</body>
+</html>

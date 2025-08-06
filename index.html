@@ -79,6 +79,10 @@
       <button onclick="handleDownload()" class="mt-6 w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
         Download Flyer
       </button>
+      <input type="email" id="email" placeholder="Email" />
+<input type="password" id="password" placeholder="Password" />
+<button id="login">Log In</button>
+<button id="signup">Sign Up</button>
     </div>
 
     <!-- Preview Section -->
@@ -227,7 +231,15 @@
     }
    async function handleLogin() {
   const email = document.getElementById('emailInput').value;
-  const { error } = await supabase.auth.signInWithOtp({ email });
+  const { data, error } = await supabase.auth.signInWithPassword({
+  email: userEmail,
+  password: userPassword
+});
+  const { data, error } = await supabase.auth.signUp({
+  email: userEmail,
+  password: userPassword
+});
+
 
   console.log("Login attempt for", email);
 

@@ -51,6 +51,13 @@
   <!-- Flyer Builder -->
   <section id="flyerBuilder" class="max-w-6xl mx-auto py-12 px-4 grid grid-cols-1 md:grid-cols-2 gap-8">
     <!-- Form Section -->
+    <!-- At the top of your form section -->
+<input type="email" id="emailInput" placeholder="Email" class="w-full p-2 border rounded" />
+<input type="password" id="passwordInput" placeholder="Password" class="w-full p-2 border rounded mt-2" />
+<div class="flex gap-2 mt-2">
+  <button onclick="handleLogin()" class="bg-blue-600 text-white px-4 py-2 rounded">Log In</button>
+  <button onclick="handleSignup()" class="bg-green-600 text-white px-4 py-2 rounded">Sign Up</button>
+</div>
     <div class="space-y-4">
       <input id="churchNameInput" class="w-full p-2 border rounded" placeholder="Church or Ministry Name" />
       <input id="eventTitleInput" class="w-full p-2 border rounded" placeholder="Event Title" />
@@ -78,11 +85,7 @@
 
       <button onclick="handleDownload()" class="mt-6 w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
         Download Flyer
-        <button id="login">Log In</button>
-        <button id="signup">Sign Up</button>
       </button>
-    <input type="email" id="email" placeholder="Email" />
-<input type="password" id="password" placeholder="Password" />
     </div>
 
     <!-- Preview Section -->
@@ -229,16 +232,32 @@
         });
       });
     }
-   async function handleLogin() {
+  async function handleLogin() {
   const email = document.getElementById('emailInput').value;
-  const { data, error } = await supabase.auth.signInWithPassword({
-  email: userEmail,
-  password: userPassword
-});
-  const { data, error } = await supabase.auth.signUp({
-  email: userEmail,
-  password: userPassword
-});
+  const password = document.getElementById('passwordInput').value;
+
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
+  if (error) {
+    alert("Login error: " + error.message);
+  } else {
+    alert("Login successful!");
+    document.getElementById("loginStatus").textContent = "Logged in as: " + data.user.email;
+  }
+}
+
+async function handleSignup() {
+  const email = document.getElementById('emailInput').value;
+  const password = document.getElementById('passwordInput').value;
+
+  const { data, error } = await supabase.auth.signUp({ email, password });
+
+  if (error) {
+    alert("Signup error: " + error.message);
+  } else {
+    alert("Signup successful! Please verify your email.");
+  }
+}
 
 
   console.log("Login attempt for", email);

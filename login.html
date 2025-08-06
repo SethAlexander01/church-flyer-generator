@@ -1,3 +1,9 @@
+supabase.auth.getSession().then(({ data: { session } }) => {
+  if (session) {
+    window.location.href = '/dashboard.html';
+  }
+});
+
 <!DOCTYPE html>
 <html>
 <head>

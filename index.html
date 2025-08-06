@@ -1,12 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <section class="text-center my-4">
-  <input type="email" id="emailInput" placeholder="Enter your email to log in" class="border p-2 rounded w-full max-w-sm" />
-  <button onclick="handleLogin()" class="bg-blue-600 text-white px-4 py-2 rounded mt-2">Login</button>
-  <p id="loginStatus" class="text-sm mt-2 text-gray-600"></p>
-</section>
-
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -103,10 +97,20 @@
   </section>
 
   <!-- Scripts -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script type="module">
+  import { createClient } from "https://ckiqqazzwjzqowtbuvmk.supabase.co";
+
+  const supabase = createClient(
+    "https://ckiqqazzwjzqowtbuvmk.supabase.co",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNraXFxYXp6d2p6cW93dGJ1dm1rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQwODcxMjYsImV4cCI6MjA2OTY2MzEyNn0.gGH88uzHgCEd4PMvQRxleiTcspnVcvpQqd4Wg_9PxxM"
+  );
+
+  // Your login, auth, and download logic goes here
+</script>
+
   <script>
-    const SUPABASE_URL = 'https://supabase.com/dashboard/project/ckiqqazzwjzqowtbuvmk';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNraXFxYXp6d2p6cW93dGJ1dm1rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQwODcxMjYsImV4cCI6MjA2OTY2MzEyNn0.gGH88uzHgCEd4PMvQRxleiTcspnVcvpQqd4Wg_9PxxMYOUR_PUBLIC_ANON_KEY';
+    const SUPABASE_URL = 'https://ckiqqazzwjzqowtbuvmk.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNraXFxYXp6d2p6cW93dGJ1dm1rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQwODcxMjYsImV4cCI6MjA2OTY2MzEyNn0.gGH88uzHgCEd4PMvQRxleiTcspnVcvpQqd4Wg';
 
 const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -199,7 +203,7 @@ const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
           const formData = new FormData();
           formData.append("file", blob, "church-flyer.png");
 
-          fetch("https://YOUR_SUPABASE_URL/storage/v1/object/public/flyers/church-flyer.png", {
+          fetch("https://ckiqqazzwjzqowtbuvmk.supabase.co", {
             method: "POST",
             headers: {
               Authorization: `Bearer ${SUPABASE_KEY}`,
@@ -235,5 +239,10 @@ const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     <a href="/download-success.html" class="hover:underline">Download Success</a>
     <p class="mt-2">© 2025 Church Flyer Generator</p>
   </footer>
+   <section class="text-center my-4">
+  <input type="email" id="emailInput" placeholder="Enter your email to log in" class="border p-2 rounded w-full max-w-sm" />
+  <button onclick="handleLogin()" class="bg-blue-600 text-white px-4 py-2 rounded mt-2">Login</button>
+  <p id="loginStatus" class="text-sm mt-2 text-gray-600"></p>
+</section>
 </body>
 </html>

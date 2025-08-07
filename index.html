@@ -27,9 +27,11 @@
 <a href="signup.html" id="signupBtn" class="text-blue-600 hover:underline ml-4">Sign Up</a>
 
 <!-- Show this only when logged in -->
-<button id="logoutBtn" style="display: none;">Log Out</button>
-<button id="manageSubBtn" style="display: none;" class="text-green-600 hover:underline mt-2">Manage Subscription</button>
-</div>
+<button id="loginBtn" onclick="window.location.href='login.html'">Login</button>
+<button id="signupBtn" onclick="window.location.href='signup.html'">Sign Up</button>
+<button id="logoutBtn" style="display: none;">Logout</button>
+<button id="manageSubscriptionBtn" style="display: none;">Manage Subscription</button>
+<div id="loginStatus"></div>
 
   <!-- Preview Samples -->
   <section class="max-w-5xl mx-auto py-10 px-4">
@@ -108,55 +110,60 @@
 
   <!-- Scripts -->
  <script type="module">
-   import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
-  const supabase = createClient('https://ckiqqazzwjzqowtbuvmk.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNraXFxYXp6d2p6cW93dGJ1dm1rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQwODcxMjYsImV4cCI6MjA2OTY2MzEyNn0.gGH88uzHgCEd4PMvQRxleiTcspnVcvpQqd4Wg_9PxxM');
- 
-  const loginBtn = document.getElementById("loginBtn");
-  const signupBtn = document.getElementById("signupBtn");
-  const logoutBtn = document.getElementById("logoutBtn");
+  const supabaseUrl = 'https://ckiqqazzwjzqowtbuvmk.supabase.co';
+  const supabaseKey = '<eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNraXFxYXp6d2p6cW93dGJ1dm1rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQwODcxMjYsImV4cCI6MjA2OTY2MzEyNn0.gGH88uzHgCEd4PMvQRxleiTcspnVcvpQqd4Wg_9PxxM>';
+  const supabase = createClient(supabaseUrl, supabaseKey);
 
-  const { data: { session } } = await supabase.auth.getSession();
+  document.addEventListener('DOMContentLoaded', async () => {
+    const loginBtn = document.getElementById("loginBtn");
+    const signupBtn = document.getElementById("signupBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const manageSubBtn = document.getElementById("manageSubscriptionBtn");
 
-  if (session) {
-    // Hide login/signup, show logout
-    if (loginBtn) loginBtn.style.display = "none";
-    if (signupBtn) signupBtn.style.display = "none";
-    if (logoutBtn) logoutBtn.style.display = "inline-block";
-  } else {
-    // Show login/signup, hide logout
-    if (loginBtn) loginBtn.style.display = "inline-block";
-    if (signupBtn) signupBtn.style.display = "inline-block";
-    if (logoutBtn) logoutBtn.style.display = "none";
-  }
+    const { data: { session } } = await supabase.auth.getSession();
+    const user = session?.user || null;
 
-  // Optional: Handle logout
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", async () => {
-      await supabase.auth.signOut();
-      window.location.reload(); // Or redirect to login
-    });
-  }
-const manageSubBtn = document.getElementById("manageSubBtn");
+    if (user) {
+      // User is logged in
+      if (loginBtn) loginBtn.style.display = 'none';
+      if (signupBtn) signupBtn.style.display = 'none';
+      if (logoutBtn) logoutBtn.style.display = 'inline-block';
 
-if (session) {
-  manageSubBtn.style.display = "inline-block";
-  manageSubBtn.addEventListener("click", async () => {
-    const response = await fetch("/api/create-portal-session", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: session.user.email })
-    });
+      // Fetch user subscription info
+      const { data: subs, error } = await supabase
+        .from("subscriptions")
+        .select("*")
+        .eq("user_id", user.id)
+        .eq("status", "active")
+        .maybeSingle();
 
-    const { url } = await response.json();
-    if (url) {
-      window.location.href = url;
+      if (subs && manageSubBtn) {
+        manageSubBtn.style.display = "inline-block";
+      }
     } else {
-      alert("Failed to open customer portal.");
+      // User is NOT logged in
+      if (loginBtn) loginBtn.style.display = 'inline-block';
+      if (signupBtn) signupBtn.style.display = 'inline-block';
+      if (logoutBtn) logoutBtn.style.display = 'none';
+      if (manageSubBtn) manageSubBtn.style.display = 'none';
+    }
+
+    // Logout handler
+    if (logoutBtn) {
+      logoutBtn.addEventListener("click", async () => {
+        await supabase.auth.signOut();
+        window.location.reload();
+      });
+    }
+
+    // Optional: Show login status text
+    const loginStatus = document.getElementById("loginStatus");
+    if (loginStatus) {
+      loginStatus.innerText = user ? `Logged in as ${user.email}` : "Not logged in";
     }
   });
-}
-
 </script>
 
   <script>

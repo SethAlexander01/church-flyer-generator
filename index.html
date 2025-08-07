@@ -23,11 +23,12 @@
 
   <div class="text-center mt-4">
 <!-- Show these only when logged out -->
-<button id="loginBtn">Login</button>
-<button id="signupBtn">Sign Up</button>
+<a href="login.html" id="loginBtn" class="text-blue-600 hover:underline">Login</a>
+<a href="signup.html" id="signupBtn" class="text-blue-600 hover:underline ml-4">Sign Up</a>
 
 <!-- Show this only when logged in -->
 <button id="logoutBtn" style="display: none;">Log Out</button>
+<button id="manageSubBtn" style="display: none;" class="text-green-600 hover:underline mt-2">Manage Subscription</button>
 </div>
 
   <!-- Preview Samples -->
@@ -125,6 +126,55 @@
     document.getElementById("loginStatus").textContent =
       "You're logged in as: " + session.user.email;
   }
+   import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+  const supabase = createClient('https://ckiqqazzwjzqowtbuvmk.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNraXFxYXp6d2p6cW93dGJ1dm1rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQwODcxMjYsImV4cCI6MjA2OTY2MzEyNn0.gGH88uzHgCEd4PMvQRxleiTcspnVcvpQqd4Wg_9PxxM');
+ 
+  const loginBtn = document.getElementById("loginBtn");
+  const signupBtn = document.getElementById("signupBtn");
+  const logoutBtn = document.getElementById("logoutBtn");
+
+  const { data: { session } } = await supabase.auth.getSession();
+
+  if (session) {
+    // Hide login/signup, show logout
+    if (loginBtn) loginBtn.style.display = "none";
+    if (signupBtn) signupBtn.style.display = "none";
+    if (logoutBtn) logoutBtn.style.display = "inline-block";
+  } else {
+    // Show login/signup, hide logout
+    if (loginBtn) loginBtn.style.display = "inline-block";
+    if (signupBtn) signupBtn.style.display = "inline-block";
+    if (logoutBtn) logoutBtn.style.display = "none";
+  }
+
+  // Optional: Handle logout
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", async () => {
+      await supabase.auth.signOut();
+      window.location.reload(); // Or redirect to login
+    });
+  }
+const manageSubBtn = document.getElementById("manageSubBtn");
+
+if (session) {
+  manageSubBtn.style.display = "inline-block";
+  manageSubBtn.addEventListener("click", async () => {
+    const response = await fetch("/api/create-portal-session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: session.user.email })
+    });
+
+    const { url } = await response.json();
+    if (url) {
+      window.location.href = url;
+    } else {
+      alert("Failed to open customer portal.");
+    }
+  });
+}
+
 </script>
 
   <script>
@@ -139,7 +189,7 @@
       document.getElementById("contactInfo").textContent = document.getElementById("contactInput").value;
       document.getElementById("socialsInfo").textContent = document.getElementById("socialsInput").value;
     }
-
+ 
     document.querySelectorAll("input, select").forEach((el) =>
       el.addEventListener("input", updateFlyer)
     );
@@ -253,37 +303,6 @@
   </footer>
 </body>
 </html>
-<button id="logoutBtn" class="hidden text-red-600 hover:underline">Logout</button>
 
-<script type="module">
-  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
-  const supabase = createClient('https://ckiqqazzwjzqowtbuvmk.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNraXFxYXp6d2p6cW93dGJ1dm1rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQwODcxMjYsImV4cCI6MjA2OTY2MzEyNn0.gGH88uzHgCEd4PMvQRxleiTcspnVcvpQqd4Wg_9PxxM');
-
-  const loginBtn = document.getElementById("loginBtn");
-  const signupBtn = document.getElementById("signupBtn");
-  const logoutBtn = document.getElementById("logoutBtn");
-
-  const { data: { session } } = await supabase.auth.getSession();
-
-  if (session) {
-    // Hide login/signup, show logout
-    if (loginBtn) loginBtn.style.display = "none";
-    if (signupBtn) signupBtn.style.display = "none";
-    if (logoutBtn) logoutBtn.style.display = "inline-block";
-  } else {
-    // Show login/signup, hide logout
-    if (loginBtn) loginBtn.style.display = "inline-block";
-    if (signupBtn) signupBtn.style.display = "inline-block";
-    if (logoutBtn) logoutBtn.style.display = "none";
-  }
-
-  // Optional: Handle logout
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", async () => {
-      await supabase.auth.signOut();
-      window.location.reload(); // Or redirect to login
-    });
-  }
-</script>
-
+ 

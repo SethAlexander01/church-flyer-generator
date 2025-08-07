@@ -22,8 +22,12 @@
   </header>
 
   <div class="text-center mt-4">
-  <a href="/login.html" class="text-blue-600 underline mr-4">Login</a>
-  <a href="/signup.html" class="text-blue-600 underline">Sign Up</a>
+<!-- Show these only when logged out -->
+<button id="loginBtn">Login</button>
+<button id="signupBtn">Sign Up</button>
+
+<!-- Show this only when logged in -->
+<button id="logoutBtn" style="display: none;">Log Out</button>
 </div>
 
   <!-- Preview Samples -->
@@ -252,19 +256,34 @@
 <button id="logoutBtn" class="hidden text-red-600 hover:underline">Logout</button>
 
 <script type="module">
-  import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
   const supabase = createClient('https://ckiqqazzwjzqowtbuvmk.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNraXFxYXp6d2p6cW93dGJ1dm1rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQwODcxMjYsImV4cCI6MjA2OTY2MzEyNn0.gGH88uzHgCEd4PMvQRxleiTcspnVcvpQqd4Wg_9PxxM');
 
-  const session = await supabase.auth.getSession();
-  const user = session.data.session?.user;
+  const loginBtn = document.getElementById("loginBtn");
+  const signupBtn = document.getElementById("signupBtn");
+  const logoutBtn = document.getElementById("logoutBtn");
 
-  if (user) {
-    const logoutBtn = document.getElementById("logoutBtn");
-    if (logoutBtn) logoutBtn.style.display = "inline";
+  const { data: { session } } = await supabase.auth.getSession();
+
+  if (session) {
+    // Hide login/signup, show logout
+    if (loginBtn) loginBtn.style.display = "none";
+    if (signupBtn) signupBtn.style.display = "none";
+    if (logoutBtn) logoutBtn.style.display = "inline-block";
+  } else {
+    // Show login/signup, hide logout
+    if (loginBtn) loginBtn.style.display = "inline-block";
+    if (signupBtn) signupBtn.style.display = "inline-block";
+    if (logoutBtn) logoutBtn.style.display = "none";
   }
 
-  document.getElementById("logoutBtn")?.addEventListener("click", async () => {
-    await supabase.auth.signOut();
-    window.location.reload();
-  });
+  // Optional: Handle logout
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", async () => {
+      await supabase.auth.signOut();
+      window.location.reload(); // Or redirect to login
+    });
+  }
 </script>
+

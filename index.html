@@ -21,6 +21,11 @@
     </a>
   </header>
 
+  <div class="text-center mt-4">
+  <a href="/login.html" class="text-blue-600 underline mr-4">Login</a>
+  <a href="/signup.html" class="text-blue-600 underline">Sign Up</a>
+</div>
+
   <!-- Preview Samples -->
   <section class="max-w-5xl mx-auto py-10 px-4">
     <h2 class="text-2xl font-bold mb-4">📸 Sample Flyers</h2>
@@ -51,13 +56,6 @@
   <!-- Flyer Builder -->
   <section id="flyerBuilder" class="max-w-6xl mx-auto py-12 px-4 grid grid-cols-1 md:grid-cols-2 gap-8">
     <!-- Form Section -->
-    <!-- At the top of your form section -->
-<input type="email" id="emailInput" placeholder="Email" class="w-full p-2 border rounded" />
-<input type="password" id="passwordInput" placeholder="Password" class="w-full p-2 border rounded mt-2" />
-<div class="flex gap-2 mt-2">
-  <button onclick="handleLogin()" class="bg-blue-600 text-white px-4 py-2 rounded">Log In</button>
-  <button onclick="handleSignup()" class="bg-green-600 text-white px-4 py-2 rounded">Sign Up</button>
-</div>
     <div class="space-y-4">
       <input id="churchNameInput" class="w-full p-2 border rounded" placeholder="Church or Ministry Name" />
       <input id="eventTitleInput" class="w-full p-2 border rounded" placeholder="Event Title" />
@@ -232,35 +230,7 @@
         });
       });
     }
-  async function handleLogin() {
-  const email = document.getElementById('emailInput').value;
-  const password = document.getElementById('passwordInput').value;
 
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-
-  if (error) {
-    alert("Login error: " + error.message);
-  } else {
-    alert("Login successful!");
-    document.getElementById("loginStatus").textContent = "Logged in as: " + data.user.email;
-  }
-}
-
-async function handleSignup() {
-  const email = document.getElementById('emailInput').value;
-  const password = document.getElementById('passwordInput').value;
-
-  const { data, error } = await supabase.auth.signUp({ email, password });
-
-  if (error) {
-    alert("Signup error: " + error.message);
-  } else {
-    alert("Signup successful! Please verify your email.");
-  }
-}
-
-
-  console.log("Login attempt for", email);
 
   if (error) {
     alert('Login error: ' + error.message);
@@ -277,10 +247,5 @@ async function handleSignup() {
     <a href="/download-success.html" class="hover:underline">Download Success</a>
     <p class="mt-2">© 2025 Church Flyer Generator</p>
   </footer>
-   <section class="text-center my-4">
-  <input type="email" id="emailInput" placeholder="Enter your email to log in" class="border p-2 rounded w-full max-w-sm" />
-  <button onclick="handleLogin()" class="bg-blue-600 text-white px-4 py-2 rounded mt-2">Login</button>
-  <p id="loginStatus" class="text-sm mt-2 text-gray-600"></p>
-</section>
 </body>
 </html>

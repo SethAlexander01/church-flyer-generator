@@ -37,24 +37,55 @@
       </form>
     </div>
 
-    <script type="module">
-      import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+   <script type="module">
+  import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-      const supabase = createClient("https://ckiqqazzwjzqowtbuvmk.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNraXFxYXp6d2p6cW93dGJ1dm1rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQwODcxMjYsImV4cCI6MjA2OTY2MzEyNn0.gGH88uzHgCEd4PMvQRxleiTcspnVcvpQqd4Wg_9PxxM");
+  const supabase = createClient(
+    "https://ckiqqazzwjzqowtbuvmk.supabase.co",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNraXFxYXp6d2p6cW93dGJ1dm1rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQwODcxMjYsImV4cCI6MjA2OTY2MzEyNn0.gGH88uzHgCEd4PMvQRxleiTcspnVcvpQqd4Wg_9PxxM"
+  );
 
-      document.getElementById("signupForm").addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const email = document.getElementById("email").value;
-        const password = document.getElementById("password").value;
+  (async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session) {
+      window.location.href = "index.html";
+      return;
+    }
 
-        const { error } = await supabase.auth.signUp({ email, password });
+    const signupForm = document.getElementById("signupForm");
+    const signupError = document.getElementById("signupError");
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+    const signupBtn = signupForm.querySelector('button[type="submit"]');
 
-        if (error) {
-          document.getElementById("signupError").textContent = error.message;
-        } else {
-          window.location.href = "index.html";
-        }
-      });
-    </script>
+    emailInput.addEventListener("input", () => { signupError.textContent = ""; });
+    passwordInput.addEventListener("input", () => { signupError.textContent = ""; });
+
+    signupForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      signupBtn.disabled = true;
+      signupBtn.textContent = "Signing up...";
+
+      const email = emailInput.value;
+      const password = passwordInput.value;
+
+      const { error } = await supabase.auth.signUp({ email, password });
+
+      signupBtn.disabled = false;
+      signupBtn.textContent = "Sign Up";
+
+      if (error) {
+        signupError.textContent = error.message;
+      } else {
+        // If you want to redirect immediately without email confirmation:
+        window.location.href = "index.html";
+
+        // Or show a message that user should confirm email if you use magic link flow:
+        // signupError.textContent = "Check your email to confirm your account.";
+      }
+    });
+  })();
+</script>
   </body>
 </html>

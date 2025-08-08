@@ -179,15 +179,18 @@
   <script>
     const flyerPreview = document.getElementById("flyerPreview");
 
-    function updateFlyer() {
-      document.getElementById("churchName").textContent = document.getElementById("churchNameInput").value;
-      document.getElementById("flyerTitle").textContent = document.getElementById("eventTitleInput").value;
-      document.getElementById("flyerDate").textContent = document.getElementById("eventDateInput").value;
-      document.getElementById("flyerLocation").textContent = document.getElementById("locationInput").value;
-      document.getElementById("guestSpeaker").textContent = document.getElementById("guestSpeakerInput").value;
-      document.getElementById("contactInfo").textContent = document.getElementById("contactInput").value;
-      document.getElementById("socialsInfo").textContent = document.getElementById("socialsInput").value;
-    }
+  function updateFlyer() {
+  document.getElementById("churchName").textContent = document.getElementById("churchNameInput").value;
+  document.getElementById("flyerTitle").textContent = document.getElementById("eventTitleInput").value;
+  document.getElementById("flyerDate").textContent = document.getElementById("eventDateInput").value;
+  document.getElementById("flyerLocation").textContent = document.getElementById("locationInput").value;
+  document.getElementById("guestSpeaker").textContent = document.getElementById("guestSpeakerInput").value;
+  document.getElementById("contactInfo").textContent = document.getElementById("contactInput").value;
+  document.getElementById("socialsInfo").textContent = document.getElementById("socialsInput").value;
+  document.getElementById("eventDescription").textContent = document.getElementById("eventDescriptionInput").value;
+}
+
+    
  
     document.querySelectorAll("input, select").forEach((el) =>
       el.addEventListener("input", updateFlyer)

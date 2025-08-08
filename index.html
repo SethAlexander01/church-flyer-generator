@@ -23,11 +23,11 @@
 
   <div class="text-center mt-4">
 <!-- Show these only when logged out -->
-<a href="login.html" id="loginBtn" class="text-blue-600 hover:underline">Login</a>
+<a href="login.html" id="loginLink" class="text-blue-600 hover:underline">Login</a>
 <a href="signup.html" id="signupBtn" class="text-blue-600 hover:underline ml-4">Sign Up</a>
 
 <!-- Show this only when logged in -->
-<button id="loginBtn" onclick="window.location.href='login.html'">Login</button>
+<button id="loginBtn" style="display: none;">Login</button>
 <button id="signupBtn" onclick="window.location.href='signup.html'">Sign Up</button>
 <button id="logoutBtn" style="display: none;">Logout</button>
 <button id="manageSubscriptionBtn" style="display: none;">Manage Subscription</button>
@@ -113,7 +113,7 @@
   import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
   const supabaseUrl = 'https://ckiqqazzwjzqowtbuvmk.supabase.co';
-  const supabaseKey = '<eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNraXFxYXp6d2p6cW93dGJ1dm1rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQwODcxMjYsImV4cCI6MjA2OTY2MzEyNn0.gGH88uzHgCEd4PMvQRxleiTcspnVcvpQqd4Wg_9PxxM>';
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNraXFxYXp6d2p6cW93dGJ1dm1rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQwODcxMjYsImV4cCI6MjA2OTY2MzEyNn0.gGH88uzHgCEd4PMvQRxleiTcspnVcvpQqd4Wg_9PxxM';
   const supabase = createClient(supabaseUrl, supabaseKey);
 
   document.addEventListener('DOMContentLoaded', async () => {
@@ -275,12 +275,7 @@
     }
 
 
-  if (error) {
-    alert('Login error: ' + error.message);
-  } else {
-    document.getElementById('loginStatus').textContent = 'Check your email for a magic login link!';
-  }
-}
+
   </script>
 
   <!-- Footer -->
